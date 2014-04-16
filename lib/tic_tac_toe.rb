@@ -17,7 +17,8 @@ class TicTacToe
   def find_winner
     winner = "draw"
     winner = find_winner_by_row
-    winner = find_winner_by_column if winner == "draw"
+    winner = find_winner_by_column    if winner == "draw"
+    winner = find_winner_by_diagonal  if winner == "draw"
     return winner
   end
 
@@ -28,6 +29,13 @@ class TicTacToe
 
   def find_winner_by_column
     return find_winning_row(@transposed_board)
+  end
+
+  def find_winner_by_diagonal
+    winner = "draw"
+    winner = find_winning_row(ascending_diagonal)
+    winner = find_winning_row(descending_diagonal) if winner == "draw"
+    return winner
   end
 
   def find_winning_row(game_board)
@@ -46,6 +54,23 @@ class TicTacToe
     end
 
     return winner
+  end
+
+  def ascending_diagonal
+    return diagonal(@game_board)
+  end
+
+  def descending_diagonal
+    return diagonal(@game_board.reverse)
+  end
+  
+  def diagonal(board)
+    diagonal = []
+    board.each_with_index do |row, i|
+      diagonal << row[i]
+    end
+
+    return [diagonal]
   end
 
   def transpose(board)
