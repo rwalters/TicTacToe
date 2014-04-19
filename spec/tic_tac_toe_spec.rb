@@ -1,12 +1,14 @@
 require "tic_tac_toe"
 
 describe TicTacToe do
-  let(:board3x3)                    { [[0,1,1],[2,2,2],[0,0,0]] }
-  let(:board3x3_diagonal)           { [[2,1,1],[1,2,2],[0,0,2]] }
-  let(:board4x4)                    { [[2,1,2,2],[2,1,0,0],[0,1,0,0],[0,1,0,0]] }
-  let(:board4x4_ascending_diagonal) { [[2,1,2,1],[2,2,1,0],[0,1,0,0],[1,2,0,0]] }
-  let(:board3x4)                    { [[0,0,0,0],[0,0,0,0],[0,0,0,0]] }
-  let(:board_staggered)             { [[0,0,0],[0,0,0,0],[0,0]] }
+  let(:empty_board)                   { [] }
+  let(:board3x3)                      { [[0,1,1],[2,2,2],[0,0,0]] }
+  let(:board3x3_invalid_players)      { [[3,1,1],[2,2,2],[0,0,0]] }
+  let(:board3x3_descending_diagonal)  { [[2,1,1],[1,2,2],[0,0,2]] }
+  let(:board4x4)                      { [[2,1,2,2],[2,1,0,0],[0,1,0,0],[0,1,0,0]] }
+  let(:board4x4_ascending_diagonal)   { [[2,1,2,1],[2,2,1,0],[0,1,0,0],[1,2,0,0]] }
+  let(:board3x4)                      { [[0,0,0,0],[0,0,0,0],[0,0,0,0]] }
+  let(:board_staggered)               { [[0,0,0],[0,0,0,0],[0,0]] }
 
   describe ".new" do
     it "accepts nil for the game board" do
@@ -15,6 +17,10 @@ describe TicTacToe do
 
     it "declares a nil game board as a draw" do
       expect(TicTacToe.new.find_winner).to eq "draw"
+    end
+
+    it "raises an error if a one-dimensional array is passed in" do
+      expect { TicTacToe.new(empty_board) }.to raise_error(TicTacToe::EmptyBoardError, "Board must be a two dimensional array")
     end
 
     it "accepts a 3x3 two dimensional array" do
@@ -31,6 +37,10 @@ describe TicTacToe do
 
     it "raises an error at a staggered two dimensional array" do
       expect {TicTacToe.new(board_staggered)}.to raise_error(TicTacToe::UnevenBoardError, "Only square game boards allowed")
+    end
+
+    it "raises an error for any invalid cells" do
+      expect {TicTacToe.new(board3x3_invalid_players)}.to raise_error(TicTacToe::InvalidPlayersError, "Only 'X', 'O', or unmoved allowed")
     end
   end
 
@@ -49,7 +59,7 @@ describe TicTacToe do
     end
  
     it "shows X as the winner when X wins on a descending diagonal" do
-      expect(TicTacToe.new(board3x3_diagonal).find_winner).to eq "X"
+      expect(TicTacToe.new(board3x3_descending_diagonal).find_winner).to eq "X"
     end
 
     it "shows O as the winner when O wins on an ascending diagonal" do

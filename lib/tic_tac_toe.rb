@@ -5,13 +5,29 @@ class TicTacToe
     end
   end
 
+  class EmptyBoardError < UnevenBoardError
+    def initialize(msg = "Board must be a two dimensional array")
+      super
+    end
+  end
+
+  class InvalidPlayersError < StandardError
+    def initialize(msg = "Only 'X', 'O', or unmoved allowed")
+      super
+    end
+  end
+
   DEFAULT_BOARD = [[0,0,0],[0,0,0],[0,0,0]]
   PLAYERS = ["", "O", "X"]
+  Y = 1
+  X = 2
 
   def initialize(board = DEFAULT_BOARD)
-    @game_board = board.clone
-    @transposed_board = transpose(@game_board)
-    raise UnevenBoardError unless @game_board.length == @transposed_board.length
+    raise EmptyBoardError     if board.empty?
+    raise InvalidPlayersError unless board.flatten.reject{|cell| PLAYERS[cell]}.empty?
+
+    @game_board        = board.clone
+    @transposed_board  = transpose(@game_board)
   end
 
   def find_winner
@@ -74,7 +90,9 @@ class TicTacToe
   end
 
   def transpose(board)
-    board.transpose
+    transposed_board = board.transpose
+    raise UnevenBoardError unless board.length == transposed_board.length
+    transposed_board
   rescue IndexError
     raise UnevenBoardError
   end
